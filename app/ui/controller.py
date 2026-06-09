@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 from PyQt6.QtCore import QObject, QThread
+from PyQt6.QtWidgets import QDialog
 
 from app.core import billing as core_billing
 from app.core import profiles as core_profiles
+from app.core.profiles import Profile
 
 from .hotkeys import HotkeyManager
 from .macos import make_window_invisible_to_capture
 from .main_window import MainWindow
+from .profile_editor import ProfileEditor
 from .worker import AssistantWorker
 
 
@@ -29,6 +32,8 @@ class Controller(QObject):
         self.window.note_btn.clicked.connect(self._on_note_toggle)
         self.window.clear_btn.clicked.connect(self._on_clear)
         self.window.profile_combo.currentIndexChanged.connect(self._on_profile_changed)
+        self.window.edit_profile_btn.clicked.connect(self._on_edit_profile)
+        self.window.new_profile_btn.clicked.connect(self._on_new_profile)
 
         # Подменяем обработчик «отправить заметку» из main_window
         self.window._on_send_note = self._on_send_note
@@ -125,3 +130,51 @@ class Controller(QObject):
 
     def _on_cost_updated(self, cost: core_billing.Cost) -> None:
         self.window.set_cost(cost.format_short())
+
+    # ── Управление профилями ────────────────────────────────────────────
+    def _on_new_profile(self) -> None:
+        dlg = ProfileEditor(self.window, profile=None)
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+        data = dlg.get_form_data()
+        new_id = core_profiles.make_id(data["name"], self.profiles)
+        profile = Profile(
+            id=new_id,
+            name=data["name"],
+            description=data["description"],
+            icon=data["icon"],
+            answer_length=data["answer_length"],
+            system_prompt=data["system_prompt"],
+        )
+        core_profiles.save_profile(profile)
+        self.profiles = core_profiles.load_profiles()
+        self.window.refresh_profiles(self.profiles, select_id=new_id)
+
+    def _on_edit_profile(self) -> None:
+        pid = self.window.current_profile_id()
+        if not pid or pid not in self.profiles:
+            return
+        current = self.profiles[pid]
+        dlg = ProfileEditor(self.window, profile=current)
+        result = dlg.exec()
+        if result == QDialog.DialogCode.Accepted:
+            data = dlg.get_form_data()
+            updated = Profile(
+                id=current.id,
+                name=data["name"],
+                description=data["description"],
+                icon=data["icon"],
+                answer_length=data["answer_length"],
+                system_prompt=data["system_prompt"],
+            )
+            core_profiles.save_profile(updated)
+            self.profiles = core_profiles.load_profiles()
+            self.window.refresh_profiles(self.profiles, select_id=current.id)
+            # Применяем новый промпт без очистки истории (это просто правка)
+            self.worker.set_profile(self.profiles[current.id], clear_history=False)
+        elif result == 2:  # удаление
+            if core_profiles.delete_profile(current.id):
+                self.profiles = core_profiles.load_profiles()
+                default = core_profiles.get_default(self.profiles)
+                self.window.refresh_profiles(self.profiles, select_id=default.id)
+                self.worker.set_profile(default, clear_history=True)

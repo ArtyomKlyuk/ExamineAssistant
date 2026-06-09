@@ -150,9 +150,22 @@ class MainWindow(QWidget):
         h.addStretch(1)
 
         self.profile_combo = QComboBox()
-        for pid, profile in self.profiles.items():
-            self.profile_combo.addItem(f"{profile.icon}  {profile.name}", userData=pid)
+        self._populate_profiles()
         h.addWidget(self.profile_combo)
+
+        # Кнопка-карандашик для редактирования текущего профиля
+        self.edit_profile_btn = QPushButton("✎")
+        self.edit_profile_btn.setObjectName("iconBtn")
+        self.edit_profile_btn.setFixedSize(28, 28)
+        self.edit_profile_btn.setToolTip("Редактировать профиль (⌘P)")
+        h.addWidget(self.edit_profile_btn)
+
+        # Кнопка-плюс для нового профиля
+        self.new_profile_btn = QPushButton("＋")
+        self.new_profile_btn.setObjectName("iconBtn")
+        self.new_profile_btn.setFixedSize(28, 28)
+        self.new_profile_btn.setToolTip("Новый профиль")
+        h.addWidget(self.new_profile_btn)
 
         # Закрыть
         close_btn = QPushButton("✕")
@@ -263,6 +276,23 @@ class MainWindow(QWidget):
 
     def current_profile_id(self) -> str:
         return self.profile_combo.currentData()
+
+    def _populate_profiles(self) -> None:
+        """Заполняет combo из self.profiles. Можно вызывать после изменения списка."""
+        self.profile_combo.blockSignals(True)
+        self.profile_combo.clear()
+        for pid, profile in self.profiles.items():
+            self.profile_combo.addItem(f"{profile.icon}  {profile.name}", userData=pid)
+        self.profile_combo.blockSignals(False)
+
+    def refresh_profiles(self, profiles: dict, select_id: str | None = None) -> None:
+        """Обновить список и выбрать конкретный профиль."""
+        self.profiles = profiles
+        self._populate_profiles()
+        if select_id:
+            idx = self.profile_combo.findData(select_id)
+            if idx >= 0:
+                self.profile_combo.setCurrentIndex(idx)
 
     def show_error(self, message: str) -> None:
         # Просто кладём в ответ — некритично, надо быстро
