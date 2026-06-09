@@ -8,10 +8,14 @@ help:  ## Список команд
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "} {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
 
 install:  ## Создать .venv и поставить зависимости
-	@test -d $(VENV) || python3 -m venv $(VENV)
+	@if [ ! -x $(PIP) ]; then \
+		echo "→ создаю venv..."; \
+		rm -rf $(VENV); \
+		python3 -m venv $(VENV); \
+	fi
 	@$(PIP) install -q --upgrade pip
 	@$(PIP) install -q -r requirements.txt
-	@test -f .env || cp .env.example .env && echo "→ создан .env (впиши ключи!)"
+	@test -f .env || (cp .env.example .env && echo "→ создан .env — впиши ключи!")
 	@echo "✓ Готово. Запуск: make run"
 
 run:  ## Запустить десктоп-приложение
