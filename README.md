@@ -7,9 +7,11 @@
 ## Установка
 
 ```bash
-brew install blackhole-2ch     # один раз — виртуальное аудио для системного звука
-make install                   # venv + зависимости + .env
+brew install blackhole-2ch uv  # blackhole — виртуальное аудио, uv — пакетный менеджер
+make install                   # синхронизация зависимостей через uv + .env
 ```
+
+Если `uv` не поставлен — `make install` сам откатится на pip (медленнее).
 
 Впиши ключи в `.env`:
 ```
@@ -57,8 +59,11 @@ make run
 
 ```bash
 make help       # список команд
+make install    # синхронизировать .venv с uv.lock
 make run        # запустить десктоп
 make cli        # запустить CLI-версию (отладка)
+make lock       # обновить uv.lock из pyproject.toml (после правки зависимостей)
+make sync       # синхронизировать .venv (то же что install)
 make clean      # удалить кэш
 make reset      # снести venv (потом make install заново)
 ```
