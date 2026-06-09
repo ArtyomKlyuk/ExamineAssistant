@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# App outputs / state
+outputs/
+logs/
+*.log
+data/
+state.json
+
+# Secrets / local config
+.env
+.env.local
+config.local.yaml
+secrets.yaml
+*.key
+
+# PyInstaller / builds
+build/
+dist/
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
