@@ -142,6 +142,8 @@ dependencies = [
     { name = "openai" },
     { name = "pynput" },
     { name = "pyobjc-framework-cocoa", marker = "sys_platform == 'darwin'" },
+    { name = "pyobjc-framework-libdispatch" },
+    { name = "pyobjc-framework-screencapturekit" },
     { name = "pyqt6" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
@@ -156,6 +158,8 @@ requires-dist = [
     { name = "openai", specifier = "==1.57.0" },
     { name = "pynput", specifier = "==1.7.7" },
     { name = "pyobjc-framework-cocoa", marker = "sys_platform == 'darwin'", specifier = "==12.2" },
+    { name = "pyobjc-framework-libdispatch", specifier = ">=12.2" },
+    { name = "pyobjc-framework-screencapturekit", specifier = ">=12.2" },
     { name = "pyqt6", specifier = "==6.8.0" },
     { name = "python-dotenv", specifier = "==1.0.1" },
     { name = "pyyaml", specifier = "==6.0.2" },
@@ -507,6 +511,25 @@ wheels = [
 ]
 
 [[package]]
+name = "pyobjc-framework-coremedia"
+version = "12.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyobjc-core" },
+    { name = "pyobjc-framework-cocoa" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6e/63/9b25f9abb14e8faee219e72953c3cc4bed48b0de4b86f767f073fd2fdc35/pyobjc_framework_coremedia-12.2.tar.gz", hash = "sha256:95ed2063cc48d73f6eb06f4e603372515b5b009bd2d6e547f90bbe9e64217206", size = 98236, upload-time = "2026-05-30T12:36:10.943Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/db/966cad806594831379785af07669e5f2c1784e88c775a381cbcba215cfa3/pyobjc_framework_coremedia-12.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:2eaddb2f4e25d7b6f32d4b85b828cc89ce6ae5502d531c2913b90d93f85fc2ae", size = 29400, upload-time = "2026-05-30T12:02:59.537Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/00/412b4b98b6c6b266a73be2862453d98a6f7f95e911c216ad2117831d2b18/pyobjc_framework_coremedia-12.2-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:e992147e7b0c8c435f1bb786c8c610511453cf54bdf6c6b4a17e05936bacc44b", size = 29412, upload-time = "2026-05-30T12:03:02.254Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/61/e3285f4b7a889a334ba06c6daef78f32e39de40ca7b061443e39e0faf42a/pyobjc_framework_coremedia-12.2-cp313-cp313t-macosx_10_13_universal2.whl", hash = "sha256:d9586fb8ae22ab1a500e812e5c16dde09b3ea75613a8b5ed61d17cd9ba75c809", size = 29472, upload-time = "2026-05-30T12:03:04.911Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/6e/66ff680d04e1e16321aca36524ef3b442de89330edd06275b9e2303b6af9/pyobjc_framework_coremedia-12.2-cp314-cp314-macosx_10_15_universal2.whl", hash = "sha256:c1adf7b6fcfb4c88bc2150c6f0366c19774e46c6978ebcfb7c70d02753bc0183", size = 29454, upload-time = "2026-05-30T12:03:07.771Z" },
+    { url = "https://files.pythonhosted.org/packages/74/dd/e61aaf92b4b7074b4f2609cd1a9c485410e76549a7f68ff10394e95396da/pyobjc_framework_coremedia-12.2-cp314-cp314t-macosx_10_15_universal2.whl", hash = "sha256:9b75c3228732d78dacfac7a39f52470606e949f07c940b45ba73588db41fe73c", size = 29500, upload-time = "2026-05-30T12:03:10.304Z" },
+    { url = "https://files.pythonhosted.org/packages/c8/aa/b3b65aeeb52cb08fc151fc6102d3127bc308e7ebd078410ff6832001d562/pyobjc_framework_coremedia-12.2-cp315-cp315-macosx_10_15_universal2.whl", hash = "sha256:fff54b5907cd346daea1bf4d6554fd6da1d69ee9bf012774c3b4ec972f4257a6", size = 29485, upload-time = "2026-05-30T12:03:13.023Z" },
+    { url = "https://files.pythonhosted.org/packages/48/b4/5c25ce6eaefc509a90c8f6efbb0a2a27e223552d4551c32cca514bd84ee5/pyobjc_framework_coremedia-12.2-cp315-cp315t-macosx_10_15_universal2.whl", hash = "sha256:ee5889c07f61d16f8d195a793a7f0ebf7f5c4eef4d1ef2fdbf5c823c74e242d0", size = 29541, upload-time = "2026-05-30T12:03:15.744Z" },
+]
+
+[[package]]
 name = "pyobjc-framework-coretext"
 version = "12.2"
 source = { registry = "https://pypi.org/simple" }
@@ -527,6 +550,25 @@ wheels = [
 ]
 
 [[package]]
+name = "pyobjc-framework-libdispatch"
+version = "12.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyobjc-core" },
+    { name = "pyobjc-framework-cocoa" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1b/fe/e23be301e46c30450955cdb096f16f6a86e7609787a4b8225ec24d6fdc9d/pyobjc_framework_libdispatch-12.2.tar.gz", hash = "sha256:4a41879ef7716b73d70f2e40ff39353d686cbc59d48c93217ed362d2b2baf1ba", size = 40345, upload-time = "2026-05-30T12:39:09.474Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/9e/94b587d8c5b243cb6026489752093a45d75fff08c85ed5b8b5548ad3596a/pyobjc_framework_libdispatch-12.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:9fb0028b400661b6b2279e2b611d396a4217bc36aa9dadd3ae21419551f5e091", size = 15634, upload-time = "2026-05-30T12:12:01.08Z" },
+    { url = "https://files.pythonhosted.org/packages/83/ac/f5e01c960287e3484f71a737e7ffd75ca1c192200de70fa342a22181895f/pyobjc_framework_libdispatch-12.2-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:265fe4edfd60de111c870932ab8397f845c314332a935aa7a27100fd8562cebc", size = 15651, upload-time = "2026-05-30T12:12:03.156Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/d9/8bcb4e234aee09396d06515ed80fb1f79cee3aeb67a311aa8e81a085584b/pyobjc_framework_libdispatch-12.2-cp313-cp313t-macosx_10_13_universal2.whl", hash = "sha256:117ed20ca54e334f657e60b9b9a3de3741d91875fd50ee51ac6a09224912cc68", size = 15918, upload-time = "2026-05-30T12:12:05.257Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/0e/caee3281628ba4913206167062274334a62ba5dedb8dada5fd884a53584f/pyobjc_framework_libdispatch-12.2-cp314-cp314-macosx_10_15_universal2.whl", hash = "sha256:fef3158dd4a068a9db8108a5cbf7da385788136e1d8af2e6fb7f82215016ecb2", size = 15679, upload-time = "2026-05-30T12:12:07.217Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/e0/ecf5fb9f11d12271818c5244c57d36ee654abfa2d15799bd594d4f58d931/pyobjc_framework_libdispatch-12.2-cp314-cp314t-macosx_10_15_universal2.whl", hash = "sha256:02dc66f1c11e25eceecf3c1b2b397f1727659dcac3e0c7b97784d5af3cfab491", size = 15960, upload-time = "2026-05-30T12:12:09.199Z" },
+    { url = "https://files.pythonhosted.org/packages/b0/74/c1d1d1fc45434dcbab16887273d368d9ad89e65939babcffd502ed308ef9/pyobjc_framework_libdispatch-12.2-cp315-cp315-macosx_10_15_universal2.whl", hash = "sha256:a81d9329fdf5094c9bc09b916e1d2fb86ab27138161d3e7ddb76ec2e780a1aba", size = 15699, upload-time = "2026-05-30T12:12:11.103Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/46/6ba13e10cbac853af00ee37444f37826a0688e32d1d22ce2fde4e2add9d3/pyobjc_framework_libdispatch-12.2-cp315-cp315t-macosx_10_15_universal2.whl", hash = "sha256:8daaf8844b5b328cf8adb6e8c085bf2aad22237956f7c5dc6fbb7a46c5015af0", size = 15990, upload-time = "2026-05-30T12:12:13.077Z" },
+]
+
+[[package]]
 name = "pyobjc-framework-quartz"
 version = "12.2"
 source = { registry = "https://pypi.org/simple" }
@@ -543,6 +585,26 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/72/f7/9a6cc42345d7a89c7344763e931476c9bf00d3b16ef1e862b1f720709afe/pyobjc_framework_quartz-12.2-cp314-cp314t-macosx_10_15_universal2.whl", hash = "sha256:57553e7085191f9421ec78fe57a8a0c8462e39d675014ac1e4b389381f04535a", size = 224703, upload-time = "2026-05-30T12:20:54.835Z" },
     { url = "https://files.pythonhosted.org/packages/41/76/a831a11a67fe36898b4b887bfe7694a291e08a96266416a832a9de97bec8/pyobjc_framework_quartz-12.2-cp315-cp315-macosx_10_15_universal2.whl", hash = "sha256:6fbd127d864108103d4980292ffca32bd9c1e5f643e0abd5773fdde2918afaca", size = 219804, upload-time = "2026-05-30T12:21:08.79Z" },
     { url = "https://files.pythonhosted.org/packages/bb/77/3223cef0bf8cc97f1d586ad1b6c79e04bfbe2a47a1fe5bd1ad3abd862325/pyobjc_framework_quartz-12.2-cp315-cp315t-macosx_10_15_universal2.whl", hash = "sha256:359738c88b12427a30d73a3d202002ab910e31eebf6bee4550495ec8aa64a004", size = 224750, upload-time = "2026-05-30T12:21:22.826Z" },
+]
+
+[[package]]
+name = "pyobjc-framework-screencapturekit"
+version = "12.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyobjc-core" },
+    { name = "pyobjc-framework-cocoa" },
+    { name = "pyobjc-framework-coremedia" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d2/e5/469c73f6ba9bf9ae6d4a93aa23838f288dabee88555402754dee000ec884/pyobjc_framework_screencapturekit-12.2.tar.gz", hash = "sha256:7f45f2e170b97dfde3e6c7d3b867ec3ec03caf3aac9259fde4ba0272d912b00e", size = 37813, upload-time = "2026-05-30T12:44:49.014Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/65/3a/461e7b200fb656c9581ae7e4bdbad58a81fc1b95b594a448b92b8858c5e7/pyobjc_framework_screencapturekit-12.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:ea666ebfd9da6a3db9eb9a36b22834ab381842d2ce0fafe19e782a03ed592aee", size = 11576, upload-time = "2026-05-30T12:22:42.324Z" },
+    { url = "https://files.pythonhosted.org/packages/73/5e/e64b2a94e8f950dc2418a274049c01ad3f8f3f54fbabe6912c72a72dff5b/pyobjc_framework_screencapturekit-12.2-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:ca8378bf217d3ac48db0bb62218b8bcf6b69bd35e1ba66608bec8c31e0f0fbf5", size = 11590, upload-time = "2026-05-30T12:22:44.063Z" },
+    { url = "https://files.pythonhosted.org/packages/21/25/892fe4f54b8ccecbcce6f05c98e377021ec4ada9b226b18523ac97c04025/pyobjc_framework_screencapturekit-12.2-cp313-cp313t-macosx_10_13_universal2.whl", hash = "sha256:c1be8a80eaa2a929cde641526f81e7452ff156234372d27c5084df472a74843a", size = 11766, upload-time = "2026-05-30T12:22:45.744Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/ed/94d8e98d2d035604e80ea72449b0e5a3fc63072a6f1aac7c76e3e5dff688/pyobjc_framework_screencapturekit-12.2-cp314-cp314-macosx_10_15_universal2.whl", hash = "sha256:d2b4d13114bcea42f4643ff263e4c5ac1d006289b2ed04ad0390180a4525bef6", size = 11646, upload-time = "2026-05-30T12:22:47.448Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/b1/eef4bc88c093a68c65553a263ebef50fc1f280682e6bded1d0d1394e6b15/pyobjc_framework_screencapturekit-12.2-cp314-cp314t-macosx_10_15_universal2.whl", hash = "sha256:8aa43d36d8840560c3521833b5c2abe45008bfd1c45c980a6fd85aa29430673c", size = 11850, upload-time = "2026-05-30T12:22:49.337Z" },
+    { url = "https://files.pythonhosted.org/packages/6c/7c/21f8b109ff5fc2a5de9dfef5c7b2dd3a6678395636c9835419410bb29a8e/pyobjc_framework_screencapturekit-12.2-cp315-cp315-macosx_10_15_universal2.whl", hash = "sha256:1784792b5809946eec69792429d332cd818614fb6899f7cce35f7c9d8c357355", size = 11641, upload-time = "2026-05-30T12:22:51.03Z" },
+    { url = "https://files.pythonhosted.org/packages/42/3c/94f3c62be42642759ea9fe3428e8e859b3ecb738b9955ce35ade5d645797/pyobjc_framework_screencapturekit-12.2-cp315-cp315t-macosx_10_15_universal2.whl", hash = "sha256:560e81da652b05b0d10b16a62eeefa5e10cb05fabcae455f1c75da55c952be32", size = 11846, upload-time = "2026-05-30T12:22:52.781Z" },
 ]
 
 [[package]]

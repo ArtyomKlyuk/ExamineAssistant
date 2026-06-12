@@ -67,16 +67,31 @@ class MainWindow(QWidget):
     def _setup_window(self) -> None:
         self.setObjectName("rootWindow")
         self.setWindowTitle("Assistant")
-        # Frameless + всегда поверх
+        # Frameless + всегда поверх.
+        # ВАЖНО: НЕ используем Qt.Tool — в accessory-режиме (без Dock-иконки)
+        # Tool-окно прячется как только приложение теряет фокус, а оно теряет
+        # его сразу. WindowDoesNotAcceptFocus позволяет окну висеть поверх и
+        # не воровать фокус у Zoom/браузера.
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
             | Qt.WindowType.WindowStaysOnTopHint
-            | Qt.WindowType.Tool  # не показывается в Dock
+            | Qt.WindowType.NoDropShadowWindowHint
         )
         # Прозрачный фон — рисуем скруглённые углы сами
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.resize(480, 380)
         self.setMinimumSize(380, 280)
+        self._place_top_right()
+
+    def _place_top_right(self) -> None:
+        """Стартовая позиция — правый верхний угол основного экрана."""
+        from PyQt6.QtGui import QGuiApplication
+        screen = QGuiApplication.primaryScreen()
+        if screen:
+            geo = screen.availableGeometry()
+            x = geo.right() - self.width() - 24
+            y = geo.top() + 60
+            self.move(x, y)
 
     def _build_ui(self) -> None:
         root = QWidget(self)
@@ -98,6 +113,15 @@ class MainWindow(QWidget):
 
         # ── Шапка ──
         layout.addWidget(self._build_header())
+
+        # ── Строка статуса устройств ──
+        self.devices_label = QLabel("")
+        self.devices_label.setObjectName("devices")
+        self.devices_label.setStyleSheet(
+            f"color: {COLORS['text_muted']}; font-size: 11px; padding: 4px 14px;"
+        )
+        self.devices_label.setWordWrap(True)
+        layout.addWidget(self.devices_label)
 
         # ── Центр: транскрипт + ответ ──
         content = QVBoxLayout()
@@ -166,6 +190,13 @@ class MainWindow(QWidget):
         self.new_profile_btn.setFixedSize(28, 28)
         self.new_profile_btn.setToolTip("Новый профиль")
         h.addWidget(self.new_profile_btn)
+
+        # Кнопка настроек звука
+        self.audio_btn = QPushButton("🔊")
+        self.audio_btn.setObjectName("iconBtn")
+        self.audio_btn.setFixedSize(28, 28)
+        self.audio_btn.setToolTip("Настройки звука")
+        h.addWidget(self.audio_btn)
 
         # Закрыть
         close_btn = QPushButton("✕")
@@ -263,6 +294,28 @@ class MainWindow(QWidget):
 
     def set_cost(self, cost_str: str) -> None:
         self.cost_badge.setText(cost_str)
+
+    def set_devices_status(self, system_name: str | None, mic_name: str | None) -> None:
+        """Показывает какие устройства подхвачены. Предупреждает если нет собеседника."""
+        parts = []
+        if system_name:
+            parts.append(f"🔊 {system_name}")
+        else:
+            parts.append("⚠️ Собеседник не слышен — разреши «Запись экрана» для приложения")
+        if mic_name:
+            parts.append(f"🎙 {mic_name}")
+        else:
+            parts.append("🎙 микрофон выключен")
+        self.devices_label.setText("   ·   ".join(parts))
+        # Если нет системного — подсвечиваем предупреждение
+        if not system_name:
+            self.devices_label.setStyleSheet(
+                f"color: {COLORS['warning']}; font-size: 11px; padding: 4px 14px;"
+            )
+        else:
+            self.devices_label.setStyleSheet(
+                f"color: {COLORS['text_muted']}; font-size: 11px; padding: 4px 14px;"
+            )
 
     def show_note_input(self) -> None:
         self.note_input.setVisible(True)

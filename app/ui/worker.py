@@ -12,6 +12,7 @@ from PyQt6.QtCore import QObject, QThread, pyqtSignal
 from app.core import audio as core_audio
 from app.core import billing as core_billing
 from app.core import claude as core_claude
+from app.core import system_audio as core_system_audio
 from app.core import transcribe as core_transcribe
 from app.core.config import BUFFER_SECONDS, DEFAULT_WINDOW_SEC, SAMPLE_RATE
 from app.core.profiles import Profile
@@ -48,6 +49,12 @@ class AssistantWorker(QObject):
         self._streams: list = []
         self._running = True
         self._levels_timer: threading.Thread | None = None
+        self._levels_running = False
+        self.current_system_idx: int | None = None
+        self.current_mic_idx: int | None = None
+        # ScreenCaptureKit-захват системного звука (без BlackHole)
+        self._sck_capture: core_system_audio.SystemAudioCapture | None = None
+        self.system_source: str = "none"   # "screencapturekit" | "blackhole" | "none"
 
     # ── Управление профилем ─────────────────────────────────────────────
     def set_profile(self, profile: Profile, clear_history: bool = True) -> None:
@@ -56,9 +63,43 @@ class AssistantWorker(QObject):
             self.history.clear()
 
     # ── Старт/стоп аудио потоков ────────────────────────────────────────
-    def start_audio(self) -> tuple[int | None, int | None]:
-        devices = core_audio.pick_devices()
-        if devices.has_system():
+    def start_audio(
+        self,
+        system_idx: int | None = None,
+        mic_idx: int | None = None,
+        auto: bool = True,
+        prefer_sck: bool = True,
+    ) -> core_audio.DevicePick:
+        """Запускает захват.
+
+        Системный звук (собеседник):
+          1. ScreenCaptureKit (без BlackHole) — если доступен и prefer_sck=True
+          2. иначе BlackHole/Loopback через sounddevice
+        Микрофон (я): всегда через sounddevice.
+        """
+        if auto:
+            devices = core_audio.pick_devices()
+        else:
+            devices = core_audio.DevicePick(system_idx=system_idx, mic_idx=mic_idx)
+
+        self.current_mic_idx = devices.mic_idx
+
+        # ── Системный звук ──
+        self.system_source = "none"
+        sck_started = False
+        if prefer_sck and core_system_audio.is_available():
+            self._sck_capture = core_system_audio.SystemAudioCapture(
+                on_audio=self.sys_buffer.append
+            )
+            sck_started = self._sck_capture.start()
+            if sck_started:
+                self.system_source = "screencapturekit"
+                self.current_system_idx = None  # SCK не использует device index
+            else:
+                # не получилось (нет разрешения Screen Recording) → попробуем BlackHole
+                self._sck_capture = None
+
+        if not sck_started and devices.has_system():
             stream = sd.InputStream(
                 samplerate=SAMPLE_RATE,
                 channels=1,
@@ -68,6 +109,14 @@ class AssistantWorker(QObject):
             )
             stream.start()
             self._streams.append(stream)
+            self.system_source = "blackhole"
+            self.current_system_idx = devices.system_idx
+        elif sck_started:
+            pass  # уже работает через SCK
+        else:
+            self.current_system_idx = None
+
+        # ── Микрофон ──
         if devices.has_mic():
             stream = sd.InputStream(
                 samplerate=SAMPLE_RATE,
@@ -79,11 +128,41 @@ class AssistantWorker(QObject):
             stream.start()
             self._streams.append(stream)
 
-        self._start_level_monitor()
-        return devices.system_idx, devices.mic_idx
+        if not self._levels_running:
+            self._start_level_monitor()
+        return devices
+
+    def restart_audio(
+        self, system_idx: int | None, mic_idx: int | None, prefer_sck: bool = False
+    ) -> core_audio.DevicePick:
+        """Останавливает текущие потоки и запускает с новыми устройствами.
+        Используется при ручном выборе устройств в UI.
+        prefer_sck=False — раз пользователь явно выбрал устройство, используем его,
+        не перехватываем через ScreenCaptureKit."""
+        self._stop_all_inputs()
+        self.sys_buffer.clear()
+        self.mic_buffer.clear()
+        return self.start_audio(
+            system_idx=system_idx, mic_idx=mic_idx, auto=False, prefer_sck=prefer_sck
+        )
+
+    def _stop_all_inputs(self) -> None:
+        for s in self._streams:
+            try:
+                s.stop(); s.close()
+            except Exception:
+                pass
+        self._streams.clear()
+        if self._sck_capture is not None:
+            try:
+                self._sck_capture.stop()
+            except Exception:
+                pass
+            self._sck_capture = None
 
     def _start_level_monitor(self) -> None:
         """Отдельный поток шлёт rms-сигналы каждые 100 мс для индикатора."""
+        self._levels_running = True
         def _loop():
             while self._running:
                 sys_rms = self.sys_buffer.rms(0.2)
@@ -96,13 +175,7 @@ class AssistantWorker(QObject):
 
     def stop_audio(self) -> None:
         self._running = False
-        for s in self._streams:
-            try:
-                s.stop()
-                s.close()
-            except Exception:
-                pass
-        self._streams.clear()
+        self._stop_all_inputs()
 
     # ── Очередь запросов ────────────────────────────────────────────────
     def request_answer(self, window_sec: int = DEFAULT_WINDOW_SEC, user_note: str = "") -> None:
